@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Turing Cameras</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font: 13px/1.4 -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: #1a202c;
+    background: #f7fafc;
+  }
+  .tc-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: #fff;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .tc-title { font-weight: 600; font-size: 14px; }
+  .tc-btn {
+    border: 1px solid #cbd5e0;
+    background: #fff;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  .tc-btn:hover { background: #edf2f7; }
+  .tc-status { padding: 8px 14px; color: #718096; }
+  .tc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    padding: 14px;
+  }
+  .tc-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+    text-align: left;
+    font: inherit;
+  }
+  .tc-card:hover { border-color: #2b6cb0; }
+  .tc-card.tc-offline { opacity: 0.5; cursor: not-allowed; }
+  .tc-card-name { font-weight: 600; }
+  .tc-card-meta { color: #718096; font-size: 11px; }
+  .tc-player {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    flex-direction: column;
+  }
+  .tc-player-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    color: #fff;
+  }
+  .tc-player video {
+    flex: 1;
+    width: 100%;
+    background: #000;
+  }
+</style>
+</head>
+<body>
+  <div id="turingCameras">
+    <div class="tc-toolbar">
+      <span class="tc-title">Turing Cameras</span>
+      <button id="tcRefresh" class="tc-btn" type="button">Refresh</button>
+    </div>
+    <div id="tcStatus" class="tc-status"></div>
+    <div id="tcGrid" class="tc-grid"></div>
+  </div>
+
+  <div id="tcPlayer" class="tc-player" hidden>
+    <div class="tc-player-bar">
+      <span id="tcPlayerName"></span>
+      <button id="tcClose" class="tc-btn" type="button">Close</button>
+    </div>
+    <video id="tcVideo" controls autoplay muted playsinline></video>
+  </div>
+
+  <script src="vendor/hls.min.js"></script>
+  <script src="addin.js"></script>
+</body>
+</html>

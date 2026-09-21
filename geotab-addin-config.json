@@ -1,0 +1,15 @@
+{
+  "name": "Turing Cameras",
+  "supportEmail": "andre@jastudio.design",
+  "version": "1.0.0",
+  "items": [
+    {
+      "url": "https://REPLACE-WITH-YOUR-NGROK-URL/addin/index.html",
+      "path": "ActivityLink",
+      "menuName": {
+        "en": "Turing Cameras"
+      },
+      "svgIcon": "https://REPLACE-WITH-YOUR-NGROK-URL/addin/icon.svg"
+    }
+  ]
+}

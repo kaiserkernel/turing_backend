@@ -1,3 +1,5 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -13,13 +15,32 @@ import {
   errorHandler
 } from "./middleware/error.middleware.js";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 export function createApp() {
   const app = express();
 
   app.disable("x-powered-by");
   app.set("trust proxy", 1);
 
-  app.use(helmet());
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+          // MyGeotab embeds the Add-In page in an iframe from its own domain.
+          // Helmet's default frame-ancestors is 'self', which would block that.
+          "frame-ancestors": [
+            "'self'",
+            ...config.geotab.allowedServers.map((server) => `https://${server}`)
+          ],
+          // hls.js and <video> fetch stream data straight from Turing's media host.
+          "media-src": ["'self'", "https://*.turingvideo.com"],
+          "connect-src": ["'self'", "https://*.turingvideo.com"]
+        }
+      }
+    })
+  );
   app.use(compression());
   app.use(express.json({ limit: "16kb" }));
   app.use(requestLog);
@@ -38,6 +59,7 @@ export function createApp() {
   );
 
   app.use("/health", healthRouter);
+  app.use("/addin", express.static(path.join(__dirname, "..", "addin")));
   app.use("/api", apiRateLimit, apiRouter);
 
   app.use(notFoundHandler);
