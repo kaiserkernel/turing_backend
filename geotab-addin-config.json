@@ -1,15 +1,15 @@
 {
   "name": "Turing Cameras",
-  "supportEmail": "andre@jastudio.design",
+  "supportEmail": "jeffreyshi13@gmail.com",
   "version": "1.0.0",
   "items": [
     {
-      "url": "https://REPLACE-WITH-YOUR-NGROK-URL/addin/index.html",
+      "url": "https://omaha-div-continuity-mega.trycloudflare.com/addin/index.html",
       "path": "ActivityLink",
       "menuName": {
         "en": "Turing Cameras"
       },
-      "svgIcon": "https://REPLACE-WITH-YOUR-NGROK-URL/addin/icon.svg"
+      "svgIcon": "https://omaha-div-continuity-mega.trycloudflare.com/addin/icon.svg"
     }
   ]
 }

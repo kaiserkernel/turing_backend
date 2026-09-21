@@ -38,7 +38,11 @@ export function createApp() {
           "media-src": ["'self'", "https://*.turingvideo.com"],
           "connect-src": ["'self'", "https://*.turingvideo.com"]
         }
-      }
+      },
+      // Helmet's default (same-origin) blocks MyGeotab's page from loading our
+      // static JS/API responses at all - the entire point of this service is
+      // to be loaded cross-origin from MyGeotab.
+      crossOriginResourcePolicy: { policy: "cross-origin" }
     })
   );
   app.use(compression());
