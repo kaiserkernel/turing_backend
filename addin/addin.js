@@ -17,7 +17,10 @@ geotab.addin.turingCameras = function () {
   var elVideo = document.getElementById("tcVideo");
 
   var hls = null;
-  var session = null; // { credentials: { database, userName, sessionId }, path }
+  var session = null; // { database, userName, sessionId, server }
+  // MyGeotab runs this script as part of its own page, so a relative fetch()
+  // would otherwise resolve against my.geotab.com instead of this backend.
+  var BACKEND = window.__TURING_BACKEND__ || "";
 
   function setStatus(text) {
     elStatus.textContent = text || "";
@@ -29,12 +32,37 @@ geotab.addin.turingCameras = function () {
     });
   }
 
+  function referrerHost() {
+    try {
+      return new URL(document.referrer).host;
+    } catch (e) {
+      return "";
+    }
+  }
+
+  /**
+   * Geotab's published samples call api.getSession(function (session) { session.userName })
+   * directly - the object is flat, not nested under a `credentials` key the way the
+   * standalone mg-api-js library's getSession() is documented. Accepting either shape
+   * here means a wrong guess about which one MyGeotab actually sends doesn't throw
+   * inside MyGeotab's own callback (which is what produces "Issue Loading This Page").
+   */
+  function normalizeSession(raw) {
+    var creds = raw.credentials || raw;
+    return {
+      database: creds.database,
+      userName: creds.userName,
+      sessionId: creds.sessionId,
+      server: raw.path || raw.server || creds.server || referrerHost()
+    };
+  }
+
   function authHeaders() {
     return {
-      "x-geotab-server": session.path,
-      "x-geotab-database": session.credentials.database,
-      "x-geotab-user": session.credentials.userName,
-      "x-geotab-session": session.credentials.sessionId
+      "x-geotab-server": session.server,
+      "x-geotab-database": session.database,
+      "x-geotab-user": session.userName,
+      "x-geotab-session": session.sessionId
     };
   }
 
@@ -44,7 +72,7 @@ geotab.addin.turingCameras = function () {
     setStatus("Loading cameras…");
     elGrid.innerHTML = "";
 
-    fetch("/api/cameras?limit=50", { headers: authHeaders() })
+    fetch(BACKEND + "/api/cameras?limit=50", { headers: authHeaders() })
       .then(function (res) {
         if (!res.ok) {
           return res.json().then(function (body) {
@@ -85,7 +113,7 @@ geotab.addin.turingCameras = function () {
   function playCamera(camera) {
     setStatus("Requesting stream…");
 
-    fetch("/api/cameras/" + camera.id + "/stream", {
+    fetch(BACKEND + "/api/cameras/" + camera.id + "/stream", {
       method: "POST",
       headers: Object.assign({ "Content-Type": "application/json" }, authHeaders()),
       body: JSON.stringify({ resolution: "sub" })
@@ -156,8 +184,12 @@ geotab.addin.turingCameras = function () {
 
     focus: function (api) {
       api.getSession(function (result) {
-        session = result;
-        loadCameras();
+        try {
+          session = normalizeSession(result);
+          loadCameras();
+        } catch (err) {
+          setStatus("Could not read the MyGeotab session: " + err.message);
+        }
       });
     },
 
