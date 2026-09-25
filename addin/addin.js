@@ -2,6 +2,36 @@ window.geotab = window.geotab || {};
 geotab.addin = geotab.addin || {};
 
 /**
+ * MyGeotab strips this page's <head> (and any <style> in it) when it injects
+ * the fetched HTML/JS into its own document, so styling has to be added from
+ * script instead - this runs immediately, the moment addin.js itself loads.
+ */
+(function injectStyles() {
+  var css =
+    "#turingCameras{font:13px/1.4 -apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#1a202c;background:#f7fafc}" +
+    ".tc-toolbar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#fff;border-bottom:1px solid #e2e8f0}" +
+    ".tc-title{font-weight:600;font-size:16px}" +
+    ".tc-btn{border:1px solid #cbd5e0;background:#fff;border-radius:6px;padding:10px 20px;cursor:pointer;font-size:15px}" +
+    ".tc-btn:hover{background:#edf2f7}" +
+    ".tc-status{padding:8px 14px;color:#718096}" +
+    ".tc-grid{display:grid;grid-template-columns:repeat(2,40vw);justify-content:center;gap:16px;padding:16px}" +
+    ".tc-grid[hidden]{display:none}" +
+    ".tc-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;width:40vw;height:40vw;border:1px solid #e2e8f0;border-radius:10px;background:#fff;cursor:pointer;text-align:center;font:inherit}" +
+    ".tc-card:hover{border-color:#2b6cb0}" +
+    ".tc-card.tc-offline{opacity:.5;cursor:not-allowed}" +
+    ".tc-card-name{font-weight:600;font-size:18px}" +
+    ".tc-card-meta{color:#718096;font-size:13px}" +
+    ".tc-player{padding:16px}" +
+    ".tc-player-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}" +
+    ".tc-player-bar span{font-weight:600;font-size:16px}" +
+    ".tc-player video{display:block;width:40vw;height:40vw;background:#000;border-radius:10px;object-fit:cover}";
+
+  var style = document.createElement("style");
+  style.textContent = css;
+  document.head.appendChild(style);
+})();
+
+/**
  * MyGeotab loads this page in an iframe and calls the lifecycle methods
  * below directly - see https://developers.geotab.com/myGeotab/addIns/developingAddIns/
  */
@@ -139,6 +169,7 @@ geotab.addin.turingCameras = function () {
     teardownPlayer();
 
     elPlayerName.textContent = name;
+    elGrid.hidden = true;
     elPlayer.hidden = false;
 
     if (window.Hls && Hls.isSupported()) {
@@ -172,6 +203,7 @@ geotab.addin.turingCameras = function () {
     teardownPlayer();
     elPlayer.hidden = true;
     elPlayerName.textContent = "";
+    elGrid.hidden = false;
   }
 
   elRefresh.addEventListener("click", loadCameras);

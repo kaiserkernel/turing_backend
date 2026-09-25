@@ -4,76 +4,11 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Turing Cameras</title>
-<style>
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font: 13px/1.4 -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    color: #1a202c;
-    background: #f7fafc;
-  }
-  .tc-toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 14px;
-    background: #fff;
-    border-bottom: 1px solid #e2e8f0;
-  }
-  .tc-title { font-weight: 600; font-size: 14px; }
-  .tc-btn {
-    border: 1px solid #cbd5e0;
-    background: #fff;
-    border-radius: 4px;
-    padding: 5px 10px;
-    cursor: pointer;
-    font-size: 12px;
-  }
-  .tc-btn:hover { background: #edf2f7; }
-  .tc-status { padding: 8px 14px; color: #718096; }
-  .tc-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 10px;
-    padding: 14px;
-  }
-  .tc-card {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-    padding: 10px;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    background: #fff;
-    cursor: pointer;
-    text-align: left;
-    font: inherit;
-  }
-  .tc-card:hover { border-color: #2b6cb0; }
-  .tc-card.tc-offline { opacity: 0.5; cursor: not-allowed; }
-  .tc-card-name { font-weight: 600; }
-  .tc-card-meta { color: #718096; font-size: 11px; }
-  .tc-player {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.85);
-    display: flex;
-    flex-direction: column;
-  }
-  .tc-player-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 14px;
-    color: #fff;
-  }
-  .tc-player video {
-    flex: 1;
-    width: 100%;
-    background: #000;
-  }
-</style>
+<!--
+  No <style> block here: MyGeotab strips <head> content when it injects this
+  page's HTML/JS into its own document, so CSS declared here never survives.
+  Styling is injected from JavaScript instead - see the top of addin.js.
+-->
 </head>
 <body>
   <div id="turingCameras">
