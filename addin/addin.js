@@ -26,13 +26,17 @@ geotab.addin = geotab.addin || {};
     ".tc-card.tc-offline{opacity:.5;cursor:not-allowed}" +
     ".tc-card-name{font-weight:600;font-size:18px}" +
     ".tc-card-meta{color:#718096;font-size:13px}" +
+    // Only one camera total: a big, explicitly-sized tile centered on the
+    // page, rather than letting the grid's auto-fit stretch it edge to edge.
+    ".tc-grid.tc-solo{display:flex;justify-content:center;align-items:center;min-height:80vh}" +
+    ".tc-grid.tc-solo .tc-card{width:70vw;height:75vh;aspect-ratio:unset}" +
     ".tc-player{padding:16px}" +
     ".tc-player-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}" +
     ".tc-player-bar span{font-weight:600;font-size:16px}" +
     ".tc-player video{display:block;width:28vw;height:28vw;background:#000;border-radius:10px;object-fit:cover}" +
-    // Only one camera total: the grid already stretches the card to fill the
-    // row (via auto-fit above), so the player should match once it's opened.
-    ".tc-player.tc-solo video{width:60vw;height:60vw}";
+    // Match the solo tile above once that one camera is actually playing.
+    ".tc-player.tc-solo{display:flex;flex-direction:column;align-items:center;min-height:80vh;justify-content:center}" +
+    ".tc-player.tc-solo video{width:70vw;height:75vh}";
 
   var style = document.createElement("style");
   style.textContent = css;
@@ -141,6 +145,7 @@ geotab.addin.turingCameras = function () {
 
   function renderGrid(cameras) {
     elGrid.innerHTML = "";
+    elGrid.classList.toggle("tc-solo", cameras.length === 1);
     cameras.forEach(function (camera) {
       var card = document.createElement("button");
       card.type = "button";
