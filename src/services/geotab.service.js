@@ -51,7 +51,13 @@ async function askGeotab({ server, database, userName, sessionId }) {
     label: LABEL,
     timeoutMs: 10000,
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      // Node's fetch sends no User-Agent by default; some edges/WAFs treat
+      // that as bot-like traffic and block it outright with a bare 403.
+      "User-Agent": "turing-mygeotab-backend/1.0 (+session verification)"
+    },
     body: JSON.stringify({
       method: "Get",
       params: {

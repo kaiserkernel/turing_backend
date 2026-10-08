@@ -77,7 +77,10 @@ export function createApp() {
     const backendOrigin = `${req.protocol}://${req.get("host")}`;
     const html = addinIndexTemplate.replace(
       "</head>",
-      `<script>window.__TURING_BACKEND__ = ${JSON.stringify(backendOrigin)};</script></head>`
+      `<script>` +
+        `window.__TURING_BACKEND__ = ${JSON.stringify(backendOrigin)};` +
+        `window.__TURING_BASE_URL__ = ${JSON.stringify(config.turing.baseUrl)};` +
+        `</script></head>`
     );
     res.set("Cache-Control", "no-store").type("html").send(html);
   });

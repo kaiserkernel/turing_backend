@@ -9,14 +9,19 @@ geotab.addin = geotab.addin || {};
 (function injectStyles() {
   var css =
     "#turingCameras{font:13px/1.4 -apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#1a202c;background:#f7fafc}" +
-    ".tc-toolbar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#fff;border-bottom:1px solid #e2e8f0}" +
+    ".tc-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 14px;background:#fff;border-bottom:1px solid #e2e8f0}" +
     ".tc-title{font-weight:600;font-size:16px}" +
-    ".tc-btn{border:1px solid #cbd5e0;background:#fff;border-radius:6px;padding:10px 20px;cursor:pointer;font-size:15px}" +
+    ".tc-toolbar-actions{display:flex;align-items:center;gap:10px}" +
+    ".tc-btn{border:1px solid #cbd5e0;background:#fff;border-radius:6px;padding:10px 20px;cursor:pointer;font-size:15px;text-decoration:none;color:inherit;display:inline-block}" +
     ".tc-btn:hover{background:#edf2f7}" +
     ".tc-status{padding:8px 14px;color:#718096}" +
-    ".tc-grid{display:grid;grid-template-columns:repeat(2,40vw);justify-content:center;gap:16px;padding:16px}" +
+    // auto-fit + minmax: as many 28vw-or-wider columns as fit, normally 3.
+    // Unlike auto-fill, auto-fit collapses empty tracks, so with fewer
+    // cameras than columns the 1fr component lets the real ones grow to
+    // fill the row instead of leaving blank space - a single camera fills it.
+    ".tc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(28vw,1fr));justify-content:center;gap:16px;padding:16px}" +
     ".tc-grid[hidden]{display:none}" +
-    ".tc-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;width:40vw;height:40vw;border:1px solid #e2e8f0;border-radius:10px;background:#fff;cursor:pointer;text-align:center;font:inherit}" +
+    ".tc-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;width:100%;aspect-ratio:1/1;border:1px solid #e2e8f0;border-radius:10px;background:#fff;cursor:pointer;text-align:center;font:inherit}" +
     ".tc-card:hover{border-color:#2b6cb0}" +
     ".tc-card.tc-offline{opacity:.5;cursor:not-allowed}" +
     ".tc-card-name{font-weight:600;font-size:18px}" +
@@ -24,7 +29,10 @@ geotab.addin = geotab.addin || {};
     ".tc-player{padding:16px}" +
     ".tc-player-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}" +
     ".tc-player-bar span{font-weight:600;font-size:16px}" +
-    ".tc-player video{display:block;width:40vw;height:40vw;background:#000;border-radius:10px;object-fit:cover}";
+    ".tc-player video{display:block;width:28vw;height:28vw;background:#000;border-radius:10px;object-fit:cover}" +
+    // Only one camera total: the grid already stretches the card to fill the
+    // row (via auto-fit above), so the player should match once it's opened.
+    ".tc-player.tc-solo video{width:60vw;height:60vw}";
 
   var style = document.createElement("style");
   style.textContent = css;
@@ -41,6 +49,7 @@ geotab.addin.turingCameras = function () {
   var elGrid = document.getElementById("tcGrid");
   var elStatus = document.getElementById("tcStatus");
   var elRefresh = document.getElementById("tcRefresh");
+  var elDashboardLink = document.getElementById("tcDashboardLink");
   var elPlayer = document.getElementById("tcPlayer");
   var elPlayerName = document.getElementById("tcPlayerName");
   var elClose = document.getElementById("tcClose");
@@ -48,9 +57,18 @@ geotab.addin.turingCameras = function () {
 
   var hls = null;
   var session = null; // { database, userName, sessionId, server }
+  var cameraCount = 0;
   // MyGeotab runs this script as part of its own page, so a relative fetch()
   // would otherwise resolve against my.geotab.com instead of this backend.
   var BACKEND = window.__TURING_BACKEND__ || "";
+
+  // Opens Turing's own Vision Dashboard directly - that's a separate site
+  // with its own login, not something this backend proxies.
+  if (window.__TURING_BASE_URL__) {
+    elDashboardLink.href = window.__TURING_BASE_URL__;
+  } else {
+    elDashboardLink.hidden = true;
+  }
 
   function setStatus(text) {
     elStatus.textContent = text || "";
@@ -112,7 +130,8 @@ geotab.addin.turingCameras = function () {
         return res.json();
       })
       .then(function (data) {
-        setStatus(data.cameras.length + " camera(s)");
+        cameraCount = data.cameras.length;
+        setStatus(cameraCount + " camera(s)");
         renderGrid(data.cameras);
       })
       .catch(function (err) {
@@ -169,6 +188,7 @@ geotab.addin.turingCameras = function () {
     teardownPlayer();
 
     elPlayerName.textContent = name;
+    elPlayer.classList.toggle("tc-solo", cameraCount === 1);
     elGrid.hidden = true;
     elPlayer.hidden = false;
 

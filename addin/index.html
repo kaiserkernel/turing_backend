@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Turing Cameras</title>
+<title>PGT SEE</title>
 <!--
   No <style> block here: MyGeotab strips <head> content when it injects this
   page's HTML/JS into its own document, so CSS declared here never survives.
@@ -13,8 +13,11 @@
 <body>
   <div id="turingCameras">
     <div class="tc-toolbar">
-      <span class="tc-title">Turing Cameras</span>
-      <button id="tcRefresh" class="tc-btn" type="button">Refresh</button>
+      <span class="tc-title">PGT SEE</span>
+      <div class="tc-toolbar-actions">
+        <a id="tcDashboardLink" class="tc-btn" href="#" target="_blank" rel="noopener noreferrer">Full Vision Dashboard</a>
+        <button id="tcRefresh" class="tc-btn" type="button">Refresh</button>
+      </div>
     </div>
     <div id="tcStatus" class="tc-status"></div>
     <div id="tcGrid" class="tc-grid"></div>

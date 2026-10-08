@@ -20,11 +20,17 @@ export async function fetchJson(url, { timeoutMs = 15000, label = "Upstream", ..
     clearTimeout(timer);
   }
 
+  const rawText = await response.text();
   let body;
   try {
-    body = await response.json();
+    body = rawText ? JSON.parse(rawText) : {};
   } catch {
-    throw ApiError.badGateway(`${label} returned an unreadable response`);
+    // Keep a snippet rather than the whole thing - this could be an HTML
+    // error/login page, and logging it in full would just spam the terminal.
+    throw ApiError.badGateway(`${label} returned an unreadable response`, {
+      status: response.status,
+      snippet: rawText.slice(0, 300)
+    });
   }
 
   return { status: response.status, body };
