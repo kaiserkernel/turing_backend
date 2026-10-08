@@ -20,7 +20,10 @@ geotab.addin = geotab.addin || {};
     // cameras than columns the 1fr component lets the real ones grow to
     // fill the row instead of leaving blank space - a single camera fills it.
     ".tc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(28vw,1fr));justify-content:center;gap:16px;padding:16px}" +
-    ".tc-grid[hidden]{display:none}" +
+    // !important: without it, .tc-grid.tc-solo{display:flex} below has equal
+    // specificity and, being later in this stylesheet, would win over this
+    // whenever both apply - leaving the grid visible even while "hidden".
+    ".tc-grid[hidden]{display:none!important}" +
     ".tc-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;width:100%;aspect-ratio:1/1;border:1px solid #e2e8f0;border-radius:10px;background:#fff;cursor:pointer;text-align:center;font:inherit}" +
     ".tc-card:hover{border-color:#2b6cb0}" +
     ".tc-card.tc-offline{opacity:.5;cursor:not-allowed}" +
