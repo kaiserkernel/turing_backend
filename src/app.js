@@ -79,7 +79,7 @@ export function createApp() {
       "</head>",
       `<script>` +
         `window.__TURING_BACKEND__ = ${JSON.stringify(backendOrigin)};` +
-        `window.__TURING_BASE_URL__ = ${JSON.stringify(config.turing.baseUrl)};` +
+        `window.__TURING_DASHBOARD_URL__ = ${JSON.stringify(config.turing.dashboardUrl)};` +
         `</script></head>`
     );
     res.set("Cache-Control", "no-store").type("html").send(html);

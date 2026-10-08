@@ -30,7 +30,10 @@ export const config = {
     baseUrl: process.env.TURING_BASE_URL ?? "https://app.turingvideo.com",
     token: required("TURING_ACCESS_TOKEN"),
     // Empty means every site the token can reach.
-    siteIds: list("TURING_SITE_IDS").map(Number).filter(Number.isFinite)
+    siteIds: list("TURING_SITE_IDS").map(Number).filter(Number.isFinite),
+    // The human-facing Vision Dashboard - a different host from the API
+    // base above. Linked from the Add-In, never called by this backend.
+    dashboardUrl: process.env.TURING_DASHBOARD_URL ?? "https://ai-video.turingvideo.com/dashboard"
   },
 
   geotab: {

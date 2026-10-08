@@ -1,13 +1,13 @@
 {
-  "name": "Turing Cameras",
+  "name": "PGT SEE",
   "supportEmail": "jeffreyshi13@gmail.com",
   "version": "1.0.0",
   "items": [
     {
       "url": "https://019a2j8.cserverhost.cloud/addin/index.html",
-      "path": "ActivityLink",
+      "path": "ActivityLink/",
       "menuName": {
-        "en": "Turing Cameras"
+        "en": "PGT SEE"
       },
       "svgIcon": "https://019a2j8.cserverhost.cloud/addin/icon.svg"
     }

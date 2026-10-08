@@ -64,8 +64,8 @@ geotab.addin.turingCameras = function () {
 
   // Opens Turing's own Vision Dashboard directly - that's a separate site
   // with its own login, not something this backend proxies.
-  if (window.__TURING_BASE_URL__) {
-    elDashboardLink.href = window.__TURING_BASE_URL__;
+  if (window.__TURING_DASHBOARD_URL__) {
+    elDashboardLink.href = window.__TURING_DASHBOARD_URL__;
   } else {
     elDashboardLink.hidden = true;
   }
