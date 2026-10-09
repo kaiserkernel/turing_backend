@@ -44,8 +44,10 @@ geotab.addin = geotab.addin || {};
     // Fixed 30vw tiles rather than auto-fit/1fr stretching - a flat repeated
     // track matching the tile's own width, centered as a row.
     ".tc-all-grid{display:grid;grid-template-columns:repeat(auto-fit,30vw);justify-content:center;gap:20px;padding:16px}" +
-    ".tc-all-list{display:flex;flex-direction:column;gap:20px;padding:16px}" +
-    ".tc-all-list .tc-tile{width:100%}" +
+    // Same fixed tile size as grid mode - just one per row instead of
+    // wrapping at 3, so no width override here (and centered, since a
+    // narrower-than-container tile would otherwise sit flush left).
+    ".tc-all-list{display:flex;flex-direction:column;align-items:center;gap:20px;padding:16px}" +
     // .tc-card (Main camera, square) and .tc-tile (All cameras, 16:9) share
     // one internal look - a label bar, a centered status placeholder, and a
     // video that fills the box - so clicking either one behaves and looks
