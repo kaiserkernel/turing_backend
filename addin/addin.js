@@ -41,16 +41,20 @@ geotab.addin = geotab.addin || {};
     // Same auto-fit/minmax idea as the Main camera grid, but a 16:9 tile
     // reads better for real video than a square, and a slightly larger gap
     // keeps live feeds from feeling cramped together.
-    ".tc-all-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(28vw,1fr));gap:20px;padding:16px}" +
+    // Fixed 30vw tiles rather than auto-fit/1fr stretching - a flat repeated
+    // track matching the tile's own width, centered as a row.
+    ".tc-all-grid{display:grid;grid-template-columns:repeat(auto-fit,30vw);justify-content:center;gap:20px;padding:16px}" +
     ".tc-all-list{display:flex;flex-direction:column;gap:20px;padding:16px}" +
     ".tc-all-list .tc-tile{width:100%}" +
     // .tc-card (Main camera, square) and .tc-tile (All cameras, 16:9) share
     // one internal look - a label bar, a centered status placeholder, and a
     // video that fills the box - so clicking either one behaves and looks
     // the same: idle button in, live video out, same size, same position.
-    ".tc-card,.tc-tile{position:relative;width:100%;background:#11161c;border-radius:10px;overflow:hidden;border:1px solid #e2e8f0;font:inherit}" +
-    ".tc-card{aspect-ratio:1/1}" +
-    ".tc-tile{aspect-ratio:16/9}" +
+    ".tc-card,.tc-tile{position:relative;background:#11161c;border-radius:10px;overflow:hidden;border:1px solid #e2e8f0;font:inherit}" +
+    ".tc-card{width:100%;aspect-ratio:1/1}" +
+    // 30vw wide, 16:9 tall (~16.9vw) - a standard video ratio that reads
+    // comfortably rather than an arbitrary fixed height.
+    ".tc-tile{width:30vw;aspect-ratio:16/9}" +
     ".tc-card video,.tc-tile video{width:100%;height:100%;object-fit:cover;display:block}" +
     ".tc-tile-label{position:absolute;top:0;left:0;right:0;padding:6px 10px;background:linear-gradient(to bottom,rgba(0,0,0,.65),transparent);color:#fff;font-size:13px;font-weight:600;display:flex;justify-content:space-between;gap:8px;z-index:1}" +
     ".tc-tile-status{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#a0aec0;font-size:13px;background:#11161c;text-align:center;padding:0 10px}" +
