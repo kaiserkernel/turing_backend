@@ -19,16 +19,19 @@
         <button id="tcRefresh" class="tc-btn" type="button">Refresh</button>
       </div>
     </div>
+    <div class="tc-controls">
+      <div class="tc-toggle" id="tcViewToggle">
+        <button type="button" class="tc-toggle-btn" data-view="single">Main camera</button>
+        <button type="button" class="tc-toggle-btn" data-view="all">All cameras</button>
+      </div>
+      <div class="tc-toggle" id="tcLayoutToggle" hidden>
+        <button type="button" class="tc-toggle-btn" data-layout="grid">Grid</button>
+        <button type="button" class="tc-toggle-btn" data-layout="list">List</button>
+      </div>
+    </div>
     <div id="tcStatus" class="tc-status"></div>
     <div id="tcGrid" class="tc-grid"></div>
-  </div>
-
-  <div id="tcPlayer" class="tc-player" hidden>
-    <div class="tc-player-bar">
-      <span id="tcPlayerName"></span>
-      <button id="tcClose" class="tc-btn" type="button">Close</button>
-    </div>
-    <video id="tcVideo" controls autoplay muted playsinline></video>
+    <div id="tcAllView" class="tc-all-view" hidden></div>
   </div>
 
   <script src="vendor/hls.min.js"></script>
