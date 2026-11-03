@@ -302,16 +302,16 @@ geotab.addin.turingCameras = function () {
     elMainStage.appendChild(buildCameraTile(camera, true, true));
   }
 
-  /** All cameras: every camera gets a tile in whichever placement (2x2 or
-   * 3x3) is currently selected, starting idle - tapping one doesn't stop
-   * any others already playing. Anything other than "3x3" (including a
-   * stale "list" value from before that option was removed) falls back to
-   * 2x2, the default. */
+  /** All cameras: every online camera gets a tile in whichever placement
+   * (2x2 or 3x3) is currently selected, and starts playing immediately -
+   * tapping one later stops just that one without affecting the others.
+   * Anything other than "3x3" (including a stale "list" value from before
+   * that option was removed) falls back to 2x2, the default. */
   function renderAllView(cameras) {
     elAllView.innerHTML = "";
     elAllView.className = "tc-all-view " + (layoutMode === "3x3" ? "tc-all-3" : "tc-all-2");
     cameras.forEach(function (camera) {
-      elAllView.appendChild(buildCameraTile(camera, false, false));
+      elAllView.appendChild(buildCameraTile(camera, false, true));
     });
   }
 
