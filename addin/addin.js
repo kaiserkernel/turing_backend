@@ -24,46 +24,32 @@ geotab.addin = geotab.addin || {};
     ".tc-toggle-btn:hover{background:#edf2f7}" +
     ".tc-toggle-btn.tc-active{background:#2b6cb0;color:#fff}" +
     ".tc-toggle-btn.tc-active:hover{background:#2b6cb0}" +
-    // auto-fit + minmax: as many 28vw-or-wider columns as fit, normally 3.
-    // Unlike auto-fill, auto-fit collapses empty tracks, so with fewer
-    // cameras than columns the 1fr component lets the real ones grow to
-    // fill the row instead of leaving blank space - a single camera fills it.
-    ".tc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(28vw,1fr));justify-content:center;gap:16px;padding:16px}" +
-    // !important: without it, .tc-grid.tc-solo{display:flex} below has equal
-    // specificity and, being later in this stylesheet, would win over this
-    // whenever both apply - leaving the grid visible even while "hidden".
-    ".tc-grid[hidden]{display:none!important}" +
-    // Only one camera total: a big, explicitly-sized tile centered on the
-    // page, rather than letting the grid's auto-fit stretch it edge to edge.
-    ".tc-grid.tc-solo{display:flex;justify-content:center;align-items:center;min-height:80vh}" +
-    ".tc-grid.tc-solo .tc-card{width:70vw;height:75vh;aspect-ratio:unset}" +
+    // Main camera: a big stage plus a scrollable picker list beside it.
+    // flex-wrap + generous min basis on each side means the list naturally
+    // drops below the stage on a narrow panel, no media query needed.
+    ".tc-main-view{display:flex;flex-wrap:wrap;gap:16px;padding:16px;align-items:flex-start}" +
+    ".tc-main-view[hidden]{display:none!important}" +
+    ".tc-main-stage{flex:3 1 400px}" +
+    ".tc-main-list{flex:1 1 200px;max-width:280px;display:flex;flex-direction:column;gap:8px;max-height:80vh;overflow-y:auto}" +
+    ".tc-main-list-item{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;cursor:pointer;font:inherit;font-size:13px;text-align:left}" +
+    ".tc-main-list-item:hover{border-color:#2b6cb0}" +
+    ".tc-main-list-item.tc-active{border-color:#2b6cb0;background:#ebf4ff;font-weight:600}" +
     ".tc-all-view[hidden]{display:none!important}" +
-    // Same auto-fit/minmax idea as the Main camera grid, but a 16:9 tile
-    // reads better for real video than a square, and a slightly larger gap
-    // keeps live feeds from feeling cramped together.
-    // Fixed 30vw tiles rather than auto-fit/1fr stretching - a flat repeated
-    // track matching the tile's own width, centered as a row.
-    ".tc-all-grid{display:grid;grid-template-columns:repeat(auto-fit,30vw);justify-content:center;gap:20px;padding:16px}" +
-    // Same fixed tile size as grid mode - just one per row instead of
-    // wrapping at 3, so no width override here (and centered, since a
-    // narrower-than-container tile would otherwise sit flush left).
-    ".tc-all-list{display:flex;flex-direction:column;align-items:center;gap:20px;padding:16px}" +
-    // .tc-card (Main camera, square) and .tc-tile (All cameras, 16:9) share
-    // one internal look - a label bar, a centered status placeholder, and a
-    // video that fills the box - so clicking either one behaves and looks
-    // the same: idle button in, live video out, same size, same position.
-    ".tc-card,.tc-tile{position:relative;background:#11161c;border-radius:10px;overflow:hidden;border:1px solid #e2e8f0;font:inherit}" +
-    ".tc-card{width:100%;aspect-ratio:1/1}" +
-    // 30vw wide, 16:9 tall (~16.9vw) - a standard video ratio that reads
-    // comfortably rather than an arbitrary fixed height.
-    ".tc-tile{width:30vw;aspect-ratio:16/9}" +
-    ".tc-card video,.tc-tile video{width:100%;height:100%;object-fit:cover;display:block}" +
+    // Two placement modes, like a normal NVR/CCTV viewer: an even 2- or
+    // 3-column split. Tiles fill whatever width their container's columns
+    // give them (see .tc-tile below), so these adapt correctly to the
+    // panel's actual width instead of assuming the full browser viewport.
+    ".tc-all-2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;padding:16px}" +
+    ".tc-all-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:16px}" +
+    // One tile component, used for the main stage and every all-cameras
+    // placement - sizing comes entirely from whatever container it's in.
+    ".tc-tile{position:relative;width:100%;aspect-ratio:16/9;background:#11161c;border-radius:10px;overflow:hidden;border:1px solid #e2e8f0;font:inherit}" +
+    ".tc-tile video{width:100%;height:100%;object-fit:cover;display:block}" +
     ".tc-tile-label{position:absolute;top:0;left:0;right:0;padding:6px 10px;background:linear-gradient(to bottom,rgba(0,0,0,.65),transparent);color:#fff;font-size:13px;font-weight:600;display:flex;justify-content:space-between;gap:8px;z-index:1}" +
     ".tc-tile-status{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#a0aec0;font-size:13px;background:#11161c;text-align:center;padding:0 10px}" +
-    // !important: same reason as .tc-grid[hidden] above - display:flex on
-    // the rule directly above has equal specificity to this and otherwise
-    // wins, so status.hidden=true in JS would silently do nothing and the
-    // "Loading…" overlay would sit on top of the video forever.
+    // !important: display:flex on the rule directly above has equal
+    // specificity to this and otherwise wins, so status.hidden=true in JS
+    // would silently do nothing and the overlay would sit on top forever.
     ".tc-tile-status[hidden]{display:none!important}" +
     ".tc-tile-expand{position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:4px;padding:4px 9px;cursor:pointer;font-size:14px;z-index:1}" +
     ".tc-tile-expand:hover{background:rgba(0,0,0,.8)}" +
@@ -85,7 +71,9 @@ geotab.addin = geotab.addin || {};
 geotab.addin.turingCameras = function () {
   "use strict";
 
-  var elGrid = document.getElementById("tcGrid");
+  var elMainView = document.getElementById("tcMainView");
+  var elMainStage = document.getElementById("tcMainStage");
+  var elMainList = document.getElementById("tcMainList");
   var elAllView = document.getElementById("tcAllView");
   var elStatus = document.getElementById("tcStatus");
   var elRefresh = document.getElementById("tcRefresh");
@@ -95,6 +83,7 @@ geotab.addin.turingCameras = function () {
 
   var session = null; // { database, userName, sessionId, server }
   var lastCameras = [];
+  var selectedCameraId = null; // Main camera mode's current pick
   var activeTiles = []; // every tile currently playing, in either view
   // MyGeotab runs this script as part of its own page, so a relative fetch()
   // would otherwise resolve against my.geotab.com instead of this backend.
@@ -119,7 +108,7 @@ geotab.addin.turingCameras = function () {
   }
 
   var viewMode = readPref("viewMode", "single"); // "single" | "all"
-  var layoutMode = readPref("layoutMode", "grid"); // "grid" | "list"
+  var layoutMode = readPref("layoutMode", "2x2"); // "2x2" | "3x3" | "list"
 
   // Opens Turing's own Vision Dashboard directly - that's a separate site
   // with its own login, not something this backend proxies.
@@ -137,6 +126,13 @@ geotab.addin.turingCameras = function () {
     return String(value).replace(/[&<>"']/g, function (c) {
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
     });
+  }
+
+  function findCamera(cameras, predicate) {
+    for (var i = 0; i < cameras.length; i++) {
+      if (predicate(cameras[i])) return cameras[i];
+    }
+    return null;
   }
 
   function referrerHost() {
@@ -177,7 +173,8 @@ geotab.addin.turingCameras = function () {
     if (!session) return;
 
     setStatus("Loading cameras…");
-    elGrid.innerHTML = "";
+    elMainStage.innerHTML = "";
+    elMainList.innerHTML = "";
     elAllView.innerHTML = "";
 
     fetch(BACKEND + "/api/cameras?limit=50", { headers: authHeaders() })
@@ -199,22 +196,20 @@ geotab.addin.turingCameras = function () {
       });
   }
 
-  /** Renders whichever view matches the current viewMode. Both views are
-   * built from the same tile component - see buildCameraTile - so clicking
-   * a camera behaves identically either way: idle button swaps for its live
-   * feed, in place, at the same size. Switching modes always tears down
-   * whatever was playing rather than leaving it running out of view. */
+  /** Renders whichever view matches the current viewMode. Switching modes
+   * always tears down whatever was playing rather than leaving it running
+   * out of view. */
   function renderCurrentView() {
     teardownAllTiles();
 
     if (viewMode === "all") {
-      elGrid.hidden = true;
+      elMainView.hidden = true;
       elAllView.hidden = false;
       renderAllView(lastCameras);
     } else {
       elAllView.hidden = true;
-      elGrid.hidden = false;
-      renderGrid(lastCameras);
+      elMainView.hidden = false;
+      renderMainView(lastCameras);
     }
   }
 
@@ -247,23 +242,76 @@ geotab.addin.turingCameras = function () {
     }
   }
 
-  /** Main camera: a grid of square buttons. Only one plays at a time -
-   * starting a new one stops whichever was already playing. */
-  function renderGrid(cameras) {
-    elGrid.innerHTML = "";
-    elGrid.classList.toggle("tc-solo", cameras.length === 1);
+  /** Main camera: one camera shown fully in the stage, with every available
+   * camera listed beside it - clicking a list entry swaps the stage to that
+   * camera. Picks up the last-selected camera if it's still online, else
+   * the first online camera, else shows nothing's available. */
+  function renderMainView(cameras) {
+    var remembered = readPref("selectedCamera", "");
+    var target =
+      findCamera(cameras, function (c) {
+        return String(c.id) === remembered && c.online;
+      }) || findCamera(cameras, function (c) {
+        return c.online;
+      });
+
+    selectedCameraId = target ? target.id : null;
+    renderMainList(cameras);
+    renderMainStage(target);
+  }
+
+  function renderMainList(cameras) {
+    elMainList.innerHTML = "";
     cameras.forEach(function (camera) {
-      elGrid.appendChild(buildCameraTile(camera, "tc-card", true));
+      var item = document.createElement("button");
+      item.type = "button";
+      item.className =
+        "tc-main-list-item" +
+        (camera.online ? "" : " tc-offline") +
+        (camera.id === selectedCameraId ? " tc-active" : "");
+      item.innerHTML =
+        "<span>" + escapeHtml(camera.name) + "</span><span>" + (camera.online ? "online" : "offline") + "</span>";
+      if (camera.online) {
+        item.addEventListener("click", function () {
+          selectCamera(camera);
+        });
+      }
+      elMainList.appendChild(item);
     });
   }
 
-  /** All cameras: a grid or list of wide tiles, each independently
-   * toggleable - tapping one doesn't stop any others already playing. */
+  function selectCamera(camera) {
+    selectedCameraId = camera.id;
+    writePref("selectedCamera", String(camera.id));
+    renderMainList(lastCameras);
+    renderMainStage(camera);
+  }
+
+  function renderMainStage(camera) {
+    elMainStage.innerHTML = "";
+    if (!camera) {
+      var placeholder = document.createElement("div");
+      placeholder.className = "tc-tile";
+      placeholder.innerHTML = '<div class="tc-tile-status">No camera available</div>';
+      elMainStage.appendChild(placeholder);
+      return;
+    }
+    // autoplay: the deliberate click already happened on the list entry
+    // (or this is the remembered/first camera on initial load), so the
+    // stage itself doesn't need a second tap before it starts playing.
+    elMainStage.appendChild(buildCameraTile(camera, true, true));
+  }
+
+  /** All cameras: every camera gets a tile in whichever placement (2x2 or
+   * 3x3) is currently selected, starting idle - tapping one doesn't stop
+   * any others already playing. Anything other than "3x3" (including a
+   * stale "list" value from before that option was removed) falls back to
+   * 2x2, the default. */
   function renderAllView(cameras) {
     elAllView.innerHTML = "";
-    elAllView.className = "tc-all-view " + (layoutMode === "grid" ? "tc-all-grid" : "tc-all-list");
+    elAllView.className = "tc-all-view " + (layoutMode === "3x3" ? "tc-all-3" : "tc-all-2");
     cameras.forEach(function (camera) {
-      elAllView.appendChild(buildCameraTile(camera, "tc-tile", false));
+      elAllView.appendChild(buildCameraTile(camera, false, false));
     });
   }
 
@@ -302,16 +350,18 @@ geotab.addin.turingCameras = function () {
   }
 
   /**
-   * One camera's clickable tile, used for both the Main camera grid (shape
-   * "tc-card", exclusive) and the All cameras view (shape "tc-tile", shared).
-   * States: offline (inert) -> idle ("Tap to view") -> loading -> playing,
-   * and playing -> idle again on a second tap (stop) or on failure (retry).
-   * `exclusive` means starting this one stops every other active tile first -
-   * that's what makes "Main camera" a single focus rather than a mosaic.
+   * One camera's clickable tile - used for the main stage and every
+   * all-cameras placement alike. States: offline (inert) -> idle ("Tap to
+   * view") -> loading -> playing, and playing -> idle again on a second tap
+   * (stop) or on failure (retry).
+   * `exclusive` means starting this one stops every other active tile first
+   * - that's what keeps Main camera a single focus rather than a mosaic.
+   * `autoplay` starts it immediately, for the main stage, where the
+   * deliberate click already happened on the list entry that led here.
    */
-  function buildCameraTile(camera, shapeClass, exclusive) {
+  function buildCameraTile(camera, exclusive, autoplay) {
     var tile = document.createElement("div");
-    tile.className = shapeClass + (camera.online ? " tc-idle" : " tc-offline");
+    tile.className = "tc-tile" + (camera.online ? " tc-idle" : " tc-offline");
 
     var label = document.createElement("div");
     label.className = "tc-tile-label";
@@ -407,6 +457,8 @@ geotab.addin.turingCameras = function () {
         tile.click();
       }
     });
+
+    if (autoplay) start();
 
     return tile;
   }
