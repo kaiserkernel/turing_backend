@@ -10,6 +10,8 @@ geotab.addin = geotab.addin || {};
   var css =
     "#turingCameras{font:13px/1.4 -apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#1a202c;background:#f7fafc}" +
     ".tc-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 14px;background:#fff;border-bottom:1px solid #e2e8f0}" +
+    ".tc-title-group{display:flex;align-items:center;gap:8px}" +
+    ".tc-logo{height:28px;width:28px;object-fit:contain;display:block}" +
     ".tc-title{font-weight:600;font-size:16px}" +
     ".tc-toolbar-actions{display:flex;align-items:center;gap:10px}" +
     ".tc-btn{border:1px solid #cbd5e0;background:#fff;border-radius:6px;padding:10px 20px;cursor:pointer;font-size:15px;text-decoration:none;color:inherit;display:inline-block}" +

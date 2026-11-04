@@ -1,7 +1,7 @@
 {
   "name": "PGT SEE",
-  "supportEmail": "jeffreyshi13@gmail.com",
-  "version": "1.0.0",
+  "supportEmail": "andre@jastudio.design",
+  "version": "1.0.4",
   "items": [
     {
       "url": "https://019a2j8.cserverhost.cloud/addin/index.html",
@@ -9,7 +9,8 @@
       "menuName": {
         "en": "PGT SEE"
       },
-      "svgIcon": "https://019a2j8.cserverhost.cloud/addin/icon.svg"
+      "icon": "https://019a2j8.cserverhost.cloud/addin/logo.png",
+      "svgIcon": "https://019a2j8.cserverhost.cloud/addin/logo.png"
     }
   ]
 }
